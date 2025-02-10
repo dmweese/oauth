@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn OAuth Redirect</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Extract the authorization code from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const authCode = urlParams.get("code");
+
+            if (authCode) {
+                // Send the auth code to the extension
+                if (window.browser) {
+                    browser.runtime.sendMessage({ action: "linkedinAuth", code: authCode });
+                } else if (window.chrome) {
+                    chrome.runtime.sendMessage({ action: "linkedinAuth", code: authCode });
+                }
+
+                // Show a success message
+                document.getElementById("message").innerHTML = `
+                    <h2>Authorization successful!</h2>
+                    <p>You can now close this tab.</p>
+                `;
+            } else {
+                document.getElementById("message").innerHTML = `
+                    <h2>Error: No authorization code found.</h2>
+                    <p>Please try signing in again.</p>
+                `;
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="message">
+        <h2>Processing LinkedIn Authentication...</h2>
+    </div>
+</body>
+</html>
